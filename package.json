@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "fastapi-dev": "pip3 install -r requirements.txt && python -m uvicorn api.index:app --reload",
+    "fastapi-dev": "pip3 install --user -r requirements.txt && python3 -m uvicorn api.index:app --reload",
     "nuxt-dev": "nuxt dev",
     "dev": "concurrently \"npm run nuxt-dev\" \"npm run fastapi-dev\"",
     "generate": "nuxt generate",
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "^1.2.0",
+    "@nuxtjs/tailwindcss": "^6.12.2",
     "@primevue/nuxt-module": "^4.2.1",
     "nuxt": "^3.11.2",
     "vue": "^3.4.23",
@@ -22,6 +23,7 @@
     "@primevue/forms": "^4.2.1",
     "@primevue/themes": "^4.2.1",
     "concurrently": "^8.2.2",
+    "primeicons": "^7.0.0",
     "primevue": "^4.2.1",
     "zod": "^3.23.8"
   }
