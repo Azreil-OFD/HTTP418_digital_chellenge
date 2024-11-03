@@ -44,7 +44,7 @@ const resolver = ref(zodResolver(
 ));
 
 const onFormSubmit = ({ valid }: { valid: boolean }) => {
-    console.log(resolver.value)
+    console.log(resolver)
     if (valid) {
         toast.add({ severity: 'success', summary: 'Form is submitted.', life: 3000 });
     }
