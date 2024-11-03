@@ -1,11 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
+
+from api.database.db import create_db_and_tables
+from .routes.auth import router as auth_router
+
 
 app = FastAPI()
 
-@app.get("/api")
-def hello_world():
-    return {"message": "Hello World", "api": "Python"}
+base_router = APIRouter(prefix="/api")
 
-@app.get("/api/test")
-def test():
-    return {"message": "Test"}
+base_router.include_router(auth_router)
+
+app.include_router(base_router)
+
+
+@app.on_event("startup")
+async def on_startup():
+    await create_db_and_tables()
