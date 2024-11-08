@@ -9,9 +9,9 @@ export default defineEventHandler(async (event) => {
   try {
     const body: AuthRequestBody = await readBody(event);
     const { login, password } = body;
-    console.log(login)
 
-    const response = await $fetch('http://127.0.0.1:8000/api/authorization/', {
+
+    const response = await $fetch('http://127.0.0.1:8000/api/registration/', {
       method: 'POST',
       headers: {
         'accept': 'application/json',
@@ -22,7 +22,6 @@ export default defineEventHandler(async (event) => {
         password,
       }),
     });
-    console.log(response)
 
     return  {
       data: response,

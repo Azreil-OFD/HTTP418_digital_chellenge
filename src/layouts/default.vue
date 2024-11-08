@@ -5,7 +5,7 @@
     </template>
 
     <template #end>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2" v-if="!token" >
         <Button type="submit" severity="secondary" label="Вход" @click="() => {navigateTo('/auth/login')}"></Button>
       </div>
     </template>
@@ -18,6 +18,9 @@
 
 <script lang="ts" setup>
 import 'primeicons/primeicons.css';
+import { useUserState } from '~/state/useUserState';
+const userState = useUserState()
+const {token} = storeToRefs(userState)
 
 const items = ref([
   {

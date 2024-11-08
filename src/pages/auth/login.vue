@@ -2,20 +2,21 @@
     <div class="flex items-center justify-center">
         <div class="card p-6 border rounded-lg border-gray-200">
             <div class="flex flex-col gap-1 w-full items-center justify-center">
-                <SelectButton v-model="selection" name="selection" :options="['Вход', 'Регистрация'] " />
+                <SelectButton v-model="selection" name="selection" :options="['Вход', 'Регистрация']" />
             </div>
-            <Form v-slot="$form" :resolver="resolver" :initialValues="initialValues" @submit="onFormSubmit"
-                class="flex flex-col gap-4 items-center justify-center">
+            <div v-if="error" class="p-4 m-3 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                role="alert">
+                {{error}}
+            </div>
+            <Form :resolver="resolver" @submit="onFormSubmit" class="flex flex-col gap-4 items-center justify-center">
                 <div class="flex flex-col gap-1 w-full">
                     <label for="email">Email</label>
-                    <InputText id="email" name="email" type="email" placeholder="Введите email" />
-                    <Message class="mt-2" v-if="$form.email?.invalid" severity="error">{{ $form.email.error?.message }}</Message>
+                    <InputText v-model="email" id="email" name="email" type="email" placeholder="Введите email" />
                 </div>
                 <div class="flex flex-col gap-1 w-full">
                     <label for="password">Password</label>
-                    <Password id="password" name="password" toggleMask placeholder="Введите пароль" />
-                    <Message class="mt-2" v-if="$form.password?.invalid" severity="error">{{ $form.password.error?.message }}
-                    </Message>
+                    <Password v-model="password" id="password" name="password" toggleMask
+                        placeholder="Введите пароль" />
                 </div>
                 <Button class="w-full" type="submit" severity="secondary" :label="selection"></Button>
             </Form>
@@ -25,28 +26,43 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useToast } from "primevue/usetoast";
-import { z } from 'zod';
-import { compileScript } from 'vue/compiler-sfc';
+import { useUserState } from '~/state/useUserState';
 
-const toast = useToast();
-const initialValues = ref({
-    email: '',
-    password: ''
-});
-const selection = ref('Вход')
-const resolver = ref(zodResolver(
-    z.object({
-        email: z.string().email({ message: 'Невалидная почта' }).nonempty({ message: 'Введите почту' }),
-        password: z.string().min(6, { message: 'Минимум 6 символов' }).nonempty({ message: 'Введите пароль' })
-    })
-));
+const userState = useUserState()
 
-const onFormSubmit = ({ valid }: { valid: boolean }) => {
-    console.log(resolver)
+const email = ref('');
+const error = ref('');
+const password = ref('');
+const selection = ref('Вход');
+
+const onFormSubmit = async ({ valid }: { valid: boolean }) => {
     if (valid) {
-        toast.add({ severity: 'success', summary: 'Form is submitted.', life: 3000 });
+        if(email.value.length < 3) {
+            error.value = "Минимум 3 символа в email"
+            return
+        }
+        if(password.value.length < 6) {
+            error.value = "Минимум 6 символа в password"
+            return
+        }
+        error.value = ""
+        let result: boolean = false
+        if (selection.value === 'Вход') {
+            result = await userState.login(email.value, password.value)
+        } else {
+            result = await userState.registration(email.value, password.value)
+        }
+        console.log(result)
+        if (result) {
+            navigateTo('/')
+        } else {
+            if(selection.value === "Вход") {
+                error.value = "Не правильный логин и пароль"
+            } else if (selection.value === "Регистрация") {
+                error.value = "Пользователь с данным email уже существует"
+            }
+         }
     }
 };
 </script>
