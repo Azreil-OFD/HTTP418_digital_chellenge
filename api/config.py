@@ -6,3 +6,4 @@ DB_PORT = "5432"
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 JWT_SECRET_KEY = "secret_jwt_words"
+FILESTORAGE_PATH = "api/filestorage"
