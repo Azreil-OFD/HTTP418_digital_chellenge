@@ -4,6 +4,7 @@ from fastapi import Depends, UploadFile, APIRouter, Form, File, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.config import FILESTORAGE_PATH
 from api.database.db import get_session
 from api.database.model import Order
 
@@ -46,7 +47,7 @@ async def create_order(
     order_uuid = str(uuid.uuid4())
 
     image_filename = f"{image_uuid}.{filename.split('.')[-1]}"
-    with open(f"api/filestorage/{image_filename}", "wb") as f:
+    with open(f"{FILESTORAGE_PATH}/{image_filename}", "wb") as f:
         f.write(content)
 
     new_order = Order(
