@@ -8,8 +8,6 @@ dist
 
 # Node dependencies
 node_modules
-package-lock.json
-yarn.lock
 
 # Logs
 logs
@@ -27,3 +25,5 @@ logs
 
 # Python
 __pycache__
+package-lock.json
+yarn.lock

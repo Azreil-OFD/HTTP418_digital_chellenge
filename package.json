@@ -1,6 +1,7 @@
 {
   "name": "nuxtjs-fastapi",
   "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "build": "nuxt build",
@@ -24,6 +25,7 @@
     "@primevue/forms": "^4.2.1",
     "@primevue/themes": "^4.2.1",
     "concurrently": "^8.2.2",
+    "nuxtjs-fastapi": "file:",
     "pinia": "^2.2.6",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.1",

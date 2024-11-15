@@ -1,8 +1,5 @@
 <script setup lang="ts">
 
-
-const route = useRoute()
-const message = ref("")
 </script>
 
 <template>

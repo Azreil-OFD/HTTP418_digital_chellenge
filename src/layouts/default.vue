@@ -28,6 +28,27 @@ const items = ref([
     icon: 'pi pi-home',
     command: () => {navigateTo('/')}
   },
+  {
+    label: 'Orders',
+    icon: 'pi pi-server',
+    items: [
+            {
+                label: 'Order list',
+                icon: 'pi pi-bars',
+                command: () => {
+                  navigateTo('/orders')
+                }
+            },
+            {
+                label: 'Create Order',
+                icon: 'pi pi-plus',
+                command: () => {
+                  navigateTo('/orders/create')
+                }
+            }
+        ]
+
+  },
 ]);
 
 </script>
