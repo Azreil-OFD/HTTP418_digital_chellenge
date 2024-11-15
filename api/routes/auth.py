@@ -1,29 +1,11 @@
-import bcrypt
-import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.config import JWT_SECRET_KEY
-from api.database.auth.model import User
+from api.database.model import User
 from api.database.db import get_session
-
-
-def create_jwt_token(user_id: int) -> str:
-    payload = {
-        "user_id": user_id,
-    }
-    return jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
-
+from api.routes.utils.security import hash_password, create_jwt_token, verify_password
 
 router = APIRouter(tags=["auth"])
 
