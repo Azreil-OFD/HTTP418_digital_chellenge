@@ -1,9 +1,9 @@
 import uuid
 
-from fastapi import Depends, UploadFile, APIRouter, Form, File, HTTPException
+from fastapi import Depends, UploadFile, APIRouter, Form, File, HTTPException, Path
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy import select
 from api.config import FILESTORAGE_PATH
 from api.database.db import get_session
 from api.database.model import Order
@@ -61,3 +61,34 @@ async def create_order(
     await session.commit()
 
     return CreateOrderResponse(order_id=order_uuid)
+
+
+class GetOrderResponse(BaseModel):
+    order_id: uuid.UUID
+    image_name: str
+    title: str
+    description: str
+
+
+@router.get("/get_order/{order_id}")
+async def get_order(
+    order_id: uuid = Path(..., description="Order UUID"),
+    user_id: int = Depends(get_user_id),
+    session: AsyncSession = Depends(get_session),
+) -> GetOrderResponse:
+    query = select(Order).where(
+        Order.uuid == order_id,
+        Order.user_id == user_id
+    )
+
+    result = await session.execute(query)
+    order = result.scalars().first()
+    if order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return GetOrderResponse(
+        order_id=order.uuid,
+        image_name=f"api/files/{order.image_name}",
+        title=order.title,
+        description=order.description
+    )
