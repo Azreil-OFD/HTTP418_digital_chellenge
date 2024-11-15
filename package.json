@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "fastapi-dev": "pip3 install --user -r requirements.txt && python3 -m uvicorn api.index:app --reload",
+    "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn api.index:app --reload",
     "nuxt-dev": "nuxt dev",
-    "dev": "concurrently \"npm run nuxt-dev\" \"npm run fastapi-dev\"",
+    "dev": "concurrently \"npm run preview\" \"npm run fastapi-dev\"",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
