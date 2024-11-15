@@ -1,11 +1,19 @@
 import { defineStore } from 'pinia';
 import { ref, onMounted } from 'vue';
+import { useUserState } from './useUserState';
 
-export const useUserState = defineStore("userState", () => {
-  const token = ref<string>("");
+const userState = useUserState()
+
+interface Orders {
+    orderId: string,
+    title: string,
+    description: string,
+    imageURL: string
+}
+export const useOrderState = defineStore("orderState", () => {
+  const orders = ref("");
 
   onMounted(() => {
-    // Проверка наличия токена в localStorage
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       token.value = storedToken;
@@ -57,7 +65,7 @@ export const useUserState = defineStore("userState", () => {
   }
 
   function isAuthenticated(): boolean {
-    return !!token.value; // Возвращает true, если токен существует, иначе false
+    return !!token.value;
   }
 
   return {token , login, registration, isAuthenticated };
