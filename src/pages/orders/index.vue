@@ -36,31 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { ProductService } from '@/service/ProductService';
-
-onMounted(() => {
-    ProductService.getProductsMini().then((data) => (products.value = data));
-});
 
 const products = ref();
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
-const getSeverity = (product) => {
-    switch (product.inventoryStatus) {
-        case 'INSTOCK':
-            return 'success';
-
-        case 'LOWSTOCK':
-            return 'warn';
-
-        case 'OUTOFSTOCK':
-            return 'danger';
-
-        default:
-            return null;
-    }
-};
 
 </script>
