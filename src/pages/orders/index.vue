@@ -22,13 +22,7 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 const orders = ref({
     
 });
-=======
-
-const products = ref();
-
->>>>>>> db17362 ([frontend] add order state)
 </script>
