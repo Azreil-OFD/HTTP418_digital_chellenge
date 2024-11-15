@@ -1,10 +1,17 @@
 import uuid
 
-from fastapi import Depends, UploadFile, APIRouter, Form, File
+from fastapi import Depends, UploadFile, APIRouter, Form, File, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.database.db import get_session
+from api.database.model import Order
+
+from api.routes.utils.security import get_user_id
+
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"}
+
 
 class CreateOrderResponse(BaseModel):
     order_id: uuid.UUID
@@ -15,23 +22,41 @@ router = APIRouter(tags=["orders"])
 
 @router.post("/create_order/", response_model=CreateOrderResponse)
 async def create_order(
-        title: str = Form(..., min_length=3, max_length=255),
-        description: str = Form(..., max_length=1024),
-        image: UploadFile = File(...),
-    session: AsyncSession = Depends(get_session)
+    title: str = Form(..., min_length=3, max_length=255),
+    description: str = Form(..., max_length=1024),
+    image: UploadFile = File(...),
+    session: AsyncSession = Depends(get_session),
+    user_id: int = Depends(get_user_id),
 ):
-    # image_filename = f"{request.title.replace(' ', '_')}.jpg"
-    # with open(f"images/{image_filename}", "wb") as f:
-    #     f.write(await request.image.read())
-    #
-    # # Создание нового заказа
-    # new_order = Order(
-    #     title=request.title,
-    #     description=request.description,
-    #     image_url=f"/images/{image_filename}"
-    # )
-    # session.add(new_order)
-    # await session.commit()
-    # await session.refresh(new_order)
+    filename = image.filename.lower()
+    if not any(filename.endswith(ext) for ext in ALLOWED_EXTENSIONS):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file extension. Allowed: .jpg, .jpeg, .png, .gif"
+        )
 
-    return CreateOrderResponse(order_id=str(uuid.uuid4()))
+    content = await image.read()
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File size exceeds the limit of {MAX_FILE_SIZE // 1024 // 1024} MB"
+        )
+
+    image_uuid = str(uuid.uuid4())
+    order_uuid = str(uuid.uuid4())
+
+    image_filename = f"{image_uuid}.{filename.split('.')[-1]}"
+    with open(f"api/filestorage/{image_filename}", "wb") as f:
+        f.write(content)
+
+    new_order = Order(
+        uuid=order_uuid,
+        title=title,
+        description=description,
+        image_name=image_filename,
+        user_id=user_id,
+    )
+    session.add(new_order)
+    await session.commit()
+
+    return CreateOrderResponse(order_id=order_uuid)
