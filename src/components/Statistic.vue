@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="flex" style="justify-content: space-between; align-items: center;">
-      <div class="text-2xl"> ____ ____</div>
+      <div v-if="naming">
+        {{ naming.type }}
+      {{ naming.name }}
+      </div>
       <ButtonGroup>
         <Button @click="setField('debit')" label="Debit"
           :variant="selectedField === 'debit' ? 'outlined' : ''"></Button>
@@ -16,7 +19,7 @@
     <div class="card">
       <Chart type="line" :data="chartData" :options="chartOptions" class="h-[30rem]" />
     </div>
-      Select range
+    Select range
     <Slider v-model="pickDate" :max="maxPickDate" range class="w-fill mt-5" />
     <div class="flex justify-center mt-4">
 
@@ -28,7 +31,8 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 const pickDate = ref([0, 100]);
-const maxPickDate = ref(100)
+const maxPickDate = ref(100)  
+
 const props = defineProps({
   dates: {
     type: Array,
@@ -39,6 +43,7 @@ const route = useRoute()
 const chartData = ref();
 const chartOptions = ref();
 const selectedField = ref('debit');
+const naming = ref('')
 let historyData = []
 let planData = []
 const fetchData = async (mode) => {
@@ -51,6 +56,9 @@ onMounted(async () => {
   setField('debit')
   pickDate.value[1] = historyData.length
   maxPickDate.value = historyData.length
+
+  const getWells = await fetch(`/api/objects/object/${route.params.id}`)
+  naming.value = await getWells.json()
 })
 watch(pickDate, async () => {
   await updateChartData()

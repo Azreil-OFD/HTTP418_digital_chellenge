@@ -90,6 +90,8 @@ const filters = ref({
 const sortDirection = ref('asc')
 // Загрузка данных (замените на ваш API-запрос)
 onMounted(async () => {
+
+
   const responsePlan = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value + 1}&per_page=10&mode=plan`, {
     method: 'GET',
     headers: {
