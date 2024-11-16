@@ -12,10 +12,10 @@ async def get_object_by_id(
         session: AsyncSession = Depends(get_session),
 ):
     result = await session.execute(text("""
-        SELECT objects.id, objects.name, objects_type.name as type
-        FROM objects
-        LEFT JOIN objects_type ON objects.id = objects_type.id
-        WHERE objects.id = :obj_id
+        SELECT o.id, o.name, ot.name as type
+        FROM objects o 
+        LEFT JOIN objects_type ot ON o.type = ot.id
+        WHERE o.id = :obj_id
     """), {"obj_id": obj_id})
 
     obj = result.fetchone()
