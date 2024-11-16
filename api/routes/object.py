@@ -1,14 +1,7 @@
-import pprint
-
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import or_, Date
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.sql import cast
-from sqlalchemy.types import Integer, String
-from typing import List, Optional
 from api.database.db import get_session
-from api.database.model import get_table
 
 router = APIRouter(tags=["objects"])
 
@@ -25,8 +18,6 @@ async def search_objects(
     order_direction: str = Query("asc", description="Order direction (asc or desc)", example="asc"),
     page: int = Query(1, ge=1, description="Page number", example=1),
     per_page: int = Query(50, ge=1, le=100, description="Number of items per page", example=50),
-    date_from: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)", example="2024-12-31"),
-    date_to: Optional[str] = Query(None, description="End date (YYYY-MM-DD)", example="2024-12-31"),
     mode: str = Query("history", description="Mode (history or plan)", example="history"),
 
     session: AsyncSession = Depends(get_session),
@@ -38,42 +29,37 @@ async def search_objects(
     if mode not in VALID_MODES:
         raise HTTPException(status_code=400, detail=f"Invalid mode. Valid modes: history, plan")
 
-    objects = get_table("objects")
-    well_day_plans = get_table("well_day_plans")
-    wells = get_table("wells")
-    well_day_histories = get_table("well_day_histories")
+    query = text(f"""
+        SELECT date_add,
+               sum(debit),
+               sum(ee_consume),
+               sum(expenses),
+               sum(pump_operating)
+        FROM well_day_histories
+        WHERE well IN (SELECT well
+                       FROM wells
+                       WHERE well = :obj_id
+                          OR ngdu = :obj_id
+                          OR cdng = :obj_id
+                          OR kust = :obj_id
+                          OR mest = :obj_id)
+        GROUP BY date_add
+        ORDER BY date_add
+        LIMIT :limit OFFSET :offset;
+    """)
 
-    table = well_day_plans if mode == "history" else well_day_histories
+    result = await session.execute(query, {
+        "obj_id": obj_id,
+        "limit": per_page,
+        "offset": per_page*page
+    })
 
-    query_statement = (
-        select(objects, table)
-        .join(table, table.c.well == objects.c.id)
-        .join(wells, wells.c.well == table.c.well)
-        .where(or_(
-            wells.c.well == obj_id,
-            wells.c.ngdu == obj_id,
-            wells.c.cdng == obj_id,
-            wells.c.kust == obj_id,
-            wells.c.mest == obj_id
-        ))
-    )
-
-    if date_from:
-        query_statement = query_statement.where(table.c.date_add >= cast(date_from, Date))
-    if date_to:
-        query_statement = query_statement.where(table.c.date_add <= cast(date_to, Date))
-
-    if order_field in VALID_ORDER_FIELDS:
-        order_column = getattr(table.c, order_field, None)
-        if order_column is not None:
-            if order_direction == "desc":
-                order_column = order_column.desc()
-            query_statement = query_statement.order_by(order_column)
-
-    offset = (page - 1) * per_page
-    query_statement = query_statement.offset(offset).limit(per_page)
-
-    result = await session.execute(query_statement)
-    records = result.fetchall()
-
-    pprint.pprint(records)
+    return [
+        {
+            "date": row[0],
+            "debit": row[1],
+            "ee_consume": row[2],
+            "expenses": row[3],
+            "pump_operating": row[4],
+        } for row in result.fetchall()
+    ]

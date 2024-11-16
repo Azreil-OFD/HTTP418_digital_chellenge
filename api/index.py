@@ -1,6 +1,5 @@
 from fastapi import FastAPI, APIRouter
 
-from .database.model import load_tables
 from .routes.auth import router as auth_router
 from .routes.filestorage import router as filestorage_router
 from .routes.object import router as object_router
@@ -15,8 +14,3 @@ base_router.include_router(filestorage_router)
 base_router.include_router(object_router)
 
 app.include_router(base_router)
-
-
-@app.on_event("startup")
-async def on_startup():
-    await load_tables()
