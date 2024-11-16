@@ -21,7 +21,7 @@ async def objects_list(
         order_direction: str = Query("asc", description="Order direction (asc or desc)", example="asc"),
         obj_type: str = Query("wells", description="Object type", example="wells"),
         page: int = Query(1, ge=1, description="Page number", example=1),
-        per_page: int = Query(50, ge=1, le=100, description="Number of items per page", example=50),
+        per_page: int = Query(50, ge=1, le=2000, description="Number of items per page", example=50),
 
         session: AsyncSession = Depends(get_session),
 ):
