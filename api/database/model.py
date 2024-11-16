@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, UUID, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, Float, Date, UniqueConstraint, MetaData, Table
 from sqlalchemy.orm import relationship
 
-from api.database.db import Base
+from api.database.db import Base, get_session, engine
 
 
 class User(Base):
@@ -11,16 +11,33 @@ class User(Base):
     login = Column(String)
     password_hash = Column(String)
 
-    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
+
+metadata = MetaData()
+
+TABLES = {
+    "objects": None,
+    "wells": None,
+    "well_day_histories": None,
+    "well_day_plans": None,
+}
 
 
-class Order(Base):
-    __tablename__ = "orders"
+async def load_tables():
+    """Загружает таблицы и сохраняет их в глобальном словаре."""
+    async with engine.connect() as conn:
+        await conn.run_sync(metadata.reflect)
+        for table_name in TABLES.keys():
+            TABLES[table_name] = metadata.tables[table_name]
 
-    uuid = Column(UUID, primary_key=True)
-    image_name = Column(String)
-    title = Column(String)
-    description = Column(String)
 
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    user = relationship("User", back_populates="orders")
+async def ensure_tables_loaded():
+    """Гарантирует, что таблицы загружены."""
+    if any(value is None for value in TABLES.values()):
+        await load_tables()
+
+
+def get_table(name: str) -> Table:
+    """Возвращает таблицу по имени, если она загружена."""
+    if TABLES[name] is None:
+        raise RuntimeError(f"Table '{name}' is not loaded. Ensure `load_tables()` is called.")
+    return TABLES[name]
