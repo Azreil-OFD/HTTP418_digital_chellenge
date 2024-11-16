@@ -28,7 +28,7 @@ const selectedField = ref('debit');
 
 const fetchData = async (mode) => {
   const response = await fetch(`/api/objects/search/?obj_id=111&order_field=date_add&order_direction=asc&page=1&per_page=50&mode=${mode}`);
-  return await response.json();
+  return (await response.json()).data;
 };
 
 const updateChartData = async () => {

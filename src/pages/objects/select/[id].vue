@@ -2,18 +2,9 @@
   <div class="card">
     <Statistic></Statistic>
     <br>
-      <DataTable v-model:filters="filters" :value="data" paginator :rows="10" dataKey="date" filterDisplay="row" :loading="loading"
+      <DataTable v-model:filters="filters" :value="data" :rows="10" dataKey="date" filterDisplay="row" :loading="loading"
               :globalFilterFields="['date', 'debit', 'ee_consume', 'expenses', 'pump_operating']">
-          <template #header>
-              <div class="flex justify-end">
-                  <IconField>
-                      <InputIcon>
-                          <i class="pi pi-search" />
-                      </InputIcon>
-                      <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-                  </IconField>
-              </div>
-          </template>
+
           <template #empty> No records found. </template>
           <template #loading> Loading data. Please wait. </template>
           <Column field="date" header="Date" style="min-width: 12rem">
@@ -41,7 +32,11 @@
                   {{ data.pump_operating }}
               </template>
           </Column>
+          <template #footer> 
+            <Paginator v-model:first="page" :rows="1" :totalRecords="totalPage" template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" />
+             </template>
       </DataTable>
+
   </div>
 </template>
 
@@ -51,6 +46,7 @@ import { FilterMatchMode } from '@primevue/core/api';
 const route = useRoute()
 
 const data = ref([]);
+const totalPage = ref(1)
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   date: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -62,16 +58,19 @@ const filters = ref({
 
 // Загрузка данных (замените на ваш API-запрос)
 onMounted(async () => {
-  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=1&per_page=50&mode=history`, {
+  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${totalPage.value}&per_page=10&mode=history`, {
       method: 'GET',
       headers: {
           'accept': 'application/json'
       }
   });
-  data.value = await response.json();
-  console.log(data.value)
-
+  const result = await response.json()
+  data.value = result.data;
+  totalPage.value = result.meta.total_page
+  console.log(result.meta.total_page)
 });
+
+const page = ref(0);
 </script>
 
 
