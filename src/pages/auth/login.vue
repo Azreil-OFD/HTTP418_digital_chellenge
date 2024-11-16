@@ -1,14 +1,14 @@
 <template>
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-center mt-20">
         <div class="card p-6 border rounded-lg border-gray-200">
             <div class="flex flex-col gap-1 w-full items-center justify-center">
-                <SelectButton v-model="selection" name="selection" :options="['Вход', 'Регистрация']" />
+                <SelectButton v-model="selection" name="selection" disabled :options="['Вход']" />
             </div>
             <div v-if="error" class="p-4 m-3 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
                 role="alert">
                 {{error}}
             </div>
-            <Form :resolver="resolver" @submit="onFormSubmit" class="flex flex-col gap-4 items-center justify-center">
+            <Form  @submit="onFormSubmit" class="flex flex-col gap-4 items-center justify-center">
                 <div class="flex flex-col gap-1 w-full">
                     <label for="email">Email</label>
                     <InputText v-model="email" id="email" name="email" type="email" placeholder="Введите email" />
@@ -29,6 +29,9 @@ import { ref } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { useUserState } from '~/state/useUserState';
 
+definePageMeta({
+  layout: false
+})
 const userState = useUserState()
 
 const email = ref('');

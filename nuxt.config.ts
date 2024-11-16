@@ -9,7 +9,13 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
+    "nuxt-mapbox",
   ],
+  mapbox: {
+    accessToken: 'pk.eyJ1Ijoic3ZjLW9rdGEtbWFwYm94LXN0YWZmLWFjY2VzcyIsImEiOiJjbG5sMnExa3kxNTJtMmtsODJld24yNGJlIn0.RQ4CHchAYPJQZSiUJ0O3VQ'
+
+  },
+
   primevue: {
     options: {
       theme: {
