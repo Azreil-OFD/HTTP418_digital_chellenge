@@ -50,7 +50,7 @@ const items = ref([
         label: 'Top Objects',
         icon: 'pi pi-chart-bar',
         command: () => {
-          navigateTo('/objects')
+          navigateTo('/objects/top')
         }
       }
     ]
