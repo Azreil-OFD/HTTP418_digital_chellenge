@@ -16,7 +16,7 @@ async def search_objects(
     order_field: str = Query("date_add", description="Field to order by", example="date_add"),
     order_direction: str = Query("asc", description="Order direction (asc or desc)", example="asc"),
     page: int = Query(1, ge=1, description="Page number", example=1),
-    per_page: int = Query(50, ge=1, le=100, description="Number of items per page", example=50),
+    per_page: int = Query(50, ge=1, le=2000, description="Number of items per page", example=50),
     mode: str = Query("history", description="Mode (history or plan)", example="history"),
 
     session: AsyncSession = Depends(get_session),
