@@ -78,14 +78,15 @@ async def search_objects(
 
     pprint.pprint(records)
 
-@router.get("/api/objects/get_area")
+@router.get("/objects/get_area")
 async def get_area(session: AsyncSession = Depends(get_session)):
     objects_table = get_table("objects")
 
-    query = select(objects_table.c.id, objects_table.c.name).where(objects_table.c.type == 5)
-
-    result = await session.execute(query)
-
-    objects = result.fetchall()
+    query = select(objects_table.c.id, objects_table.c.name).where(objects_table.c.type == 1)
+    # print("lffasdasddas")
+    area = await session.execute(query)
+    if not area:
+        raise HTTPException(status_code=404, detail="No area found")
+    objects = area.fetchall()
 
     return [{"id": obj.id, "name": obj.name} for obj in objects]
