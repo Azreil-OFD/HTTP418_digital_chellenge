@@ -1,20 +1,25 @@
 <template>
   <div>
+    
       <div class="card">
           <Chart type="line" :data="chartData" :options="chartOptions" class="h-[30rem]" />
       </div>
+      Укажите диапазон
+      <Slider v-model="pickDate" :max="maxPickDate" range class="w-fill mt-5" />
       <div class="flex justify-center mt-4">
           <button @click="setField('debit')" class="btn">Debit</button>
           <button @click="setField('ee_consume')" class="btn">EE Consume</button>
           <button @click="setField('expenses')" class="btn">Expenses</button>
           <button @click="setField('pump_operating')" class="btn">Pump Operating</button>
       </div>
+      
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-
+const pickDate = ref([0, 100]);
+const maxPickDate = ref(100)
 const props = defineProps({
   dates: {
       type: Array,
@@ -28,22 +33,27 @@ const selectedField = ref('debit');
 let historyData = []
 let planData = []
 const fetchData = async (mode) => {
-  const response = await fetch(`/api/objects/search/?obj_id=111&order_field=date_add&order_direction=asc&page=1&per_page=50&mode=${mode}`);
+  const response = await fetch(`/api/objects/search/?obj_id=111&order_field=date_add&order_direction=asc&page=1&per_page=1600&mode=${mode}`);
   return (await response.json()).data;
 };
 onMounted(async () => {
    historyData = await fetchData('history');
    planData = await fetchData('plan');
    setField('debit')
+   pickDate.value[1] = historyData.length
+   maxPickDate.value = historyData.length
+})
+watch(pickDate, async () => {
+  await updateChartData()
 })
 const updateChartData = async () => {
-  const labels = historyData.map(item => item.date);
+  const labels = historyData.map(item => item.date).slice(pickDate.value[0], pickDate.value[1]);
   const historyValues = historyData.map(item => item[selectedField.value]);
   const planValues = planData.map(item => item[selectedField.value]);
 
   // Фильтрация данных в зависимости от выбранных дат
-  const filteredHistory = filterDataByDate(historyData);
-  const filteredPlan = filterDataByDate(planData);
+  const filteredHistory = filterDataByDate(historyData).slice(pickDate.value[0], pickDate.value[1]);
+  const filteredPlan = filterDataByDate(planData).slice(pickDate.value[0], pickDate.value[1]);
 
   chartData.value = {
       labels: labels,
