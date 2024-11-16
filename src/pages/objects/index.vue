@@ -42,14 +42,15 @@ const area = ref([
     { name: 'ТуяНефть', code: '4' }
 ]);
 
-const data = ref(null); // Изначально data равно null
+const data = ref([]); 
 const selection = ref({});
 
 // Функция для получения данных из API
 const fetchData = async (objId) => {
     try {
-        const response = await axios.get(`http://127.0.0.1:3000/api/api/objects/tree/?obj_id=${objId}`);
-        data.value = response.data; // Предполагая, что данные возвращаются в нужном формате
+        const response = await axios.get(`/api/objects/tree/?obj_id=${objId}`);
+        console.log(response.data)
+        data.value = response.data;
     } catch (error) {
         console.error("Ошибка при получении данных:", error);
     }
