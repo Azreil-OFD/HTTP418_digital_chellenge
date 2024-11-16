@@ -18,6 +18,7 @@
 
 <script lang="ts" setup>
 import 'primeicons/primeicons.css';
+import '../../assets/css/input.css';
 import { useUserState } from '~/state/useUserState';
 const userState = useUserState()
 const {token} = storeToRefs(userState)

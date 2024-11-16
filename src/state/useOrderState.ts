@@ -1,72 +1,55 @@
 import { defineStore } from 'pinia';
-import { ref, onMounted } from 'vue';
-import { useUserState } from './useUserState';
+import { useUserState } from './useUserState'; 
+import axios from 'axios';
 
 const userState = useUserState()
 
-interface Orders {
-    orderId: string,
-    title: string,
-    description: string,
-    imageURL: string
+interface orderCreate {
+  title: string;
+  description: string;
+  image: File | null;
 }
+
+interface orderCreateResponse {
+  order_id: string; 
+}
+
 export const useOrderState = defineStore("orderState", () => {
-  const orders = ref("");
-
-  onMounted(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      token.value = storedToken;
+  
+  // Метод для создания ордера
+  async function createOrder(order: orderCreate): Promise<orderCreateResponse> {
+    // Получаем токен из состояния пользователя
+    const token = userState.token;
+    
+    // Проверяем наличие токена
+    if (!token) {
+      throw new Error('Токен авторизации отсутствует');
     }
-  });
 
-  async function login(login: string, password: string): Promise<boolean> {
+    // Формируем FormData для отправки на сервер
+    const formData = new FormData();
+    formData.append('title', order.title);
+    formData.append('description', order.description);
+    if (order.image) {
+      formData.append('image', order.image);
+    }
+
     try {
-      const response: {
-         
-        data: {token: string}
-        statusCode: number
-      } = await $fetch('/backend/auth/login/', {
-        method: 'POST',
-        body: { login, password }
+      // Отправляем POST-запрос на создание ордера
+      const response = await axios.post('/api/create_order/', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (response.statusCode === 200) {
-        token.value = response.data.token;
-        localStorage.setItem("token", token.value);
-        return true;
-      } else {
-        return false;
-      }
+      // Возвращаем данные ответа, содержащие order_id
+      return response.data;
     } catch (error) {
-      console.error("Login error:", error);
-      return false;
+      console.error('Ошибка при создании ордера:', error);
+      throw error; // Прокидываем ошибку для обработки в компоненте
     }
   }
 
-  async function registration(login: string, password: string): Promise<boolean> {
-    try {
-      const response = await $fetch('/backend/auth/registration/', {
-        method: 'POST',
-        body: { login, password }
-      });
-
-      if (response.statusCode === 200) {
-        token.value = response.data.token;
-        localStorage.setItem("token", token.value);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      return false;
-    }
-  }
-
-  function isAuthenticated(): boolean {
-    return !!token.value;
-  }
-
-  return {token , login, registration, isAuthenticated };
+  return { createOrder };
 });

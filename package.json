@@ -4,13 +4,15 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    
     "build": "nuxt build",
     "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn api.index:app --reload",
     "nuxt-dev": "nuxt dev",
-    "dev": "concurrently \"npm run preview\" \"npm run fastapi-dev\"",
+    "dev": "concurrently \"npm run nuxt-dev\" \"npm run fastapi-dev\"",
+    "prod": "concurrently \"npm run preview\" \"npm run fastapi-dev\" \"tuna http 3000 --subdomain=tessst\"",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare && tuna config save-token tt_ubx4yk96ygl7n8lt0uh2npkk703aow1x"
   },
   "devDependencies": {
     "@nuxt/devtools": "^1.2.0",
@@ -24,7 +26,11 @@
   "dependencies": {
     "@primevue/forms": "^4.2.1",
     "@primevue/themes": "^4.2.1",
+    "@types/form-data": "^2.2.1",
+    "@types/formdata": "^0.10.4",
+    "axios": "^1.7.7",
     "concurrently": "^8.2.2",
+    "form-data": "^4.0.1",
     "pinia": "^2.2.6",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.1",
