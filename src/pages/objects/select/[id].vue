@@ -58,7 +58,7 @@ const filters = ref({
 
 // Загрузка данных (замените на ваш API-запрос)
 onMounted(async () => {
-  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${totalPage.value}&per_page=10&mode=history`, {
+  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value +1}&per_page=10&mode=history`, {
       method: 'GET',
       headers: {
           'accept': 'application/json'
@@ -67,10 +67,19 @@ onMounted(async () => {
   const result = await response.json()
   data.value = result.data;
   totalPage.value = result.meta.total_page
-  console.log(result.meta.total_page)
 });
 
 const page = ref(0);
+watch(page , async ( ) => {
+  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value +1}&per_page=10&mode=history`, {
+      method: 'GET',
+      headers: {
+          'accept': 'application/json'
+      }
+  });
+  const result = await response.json()
+  data.value = result.data;
+})
 </script>
 
 

@@ -25,16 +25,18 @@ const props = defineProps({
 const chartData = ref();
 const chartOptions = ref();
 const selectedField = ref('debit');
-
+let historyData = []
+let planData = []
 const fetchData = async (mode) => {
   const response = await fetch(`/api/objects/search/?obj_id=111&order_field=date_add&order_direction=asc&page=1&per_page=50&mode=${mode}`);
   return (await response.json()).data;
 };
-
+onMounted(async () => {
+   historyData = await fetchData('history');
+   planData = await fetchData('plan');
+   setField('debit')
+})
 const updateChartData = async () => {
-  const historyData = await fetchData('history');
-  const planData = await fetchData('plan');
-
   const labels = historyData.map(item => item.date);
   const historyValues = historyData.map(item => item[selectedField.value]);
   const planValues = planData.map(item => item[selectedField.value]);
