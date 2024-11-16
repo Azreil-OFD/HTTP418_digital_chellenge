@@ -1,5 +1,6 @@
 <template>
-  <div style="position: absolute; left: 0; top: 0; height: 10%; width: 100%; z-index: -5;" class="backdrop-blur-sm"></div>
+  <div style="position: absolute; left: 0; top: 0; height: 10%; width: 100%; z-index: -5;" class="backdrop-blur-sm">
+  </div>
   <Menubar :model="items" class="m-5">
     <template #start>
       <NuxtLink to="/">HTTP418</NuxtLink>
@@ -24,7 +25,7 @@ import { useUserState } from '~/state/useUserState';
 const userState = useUserState()
 const { token } = storeToRefs(userState)
 onMounted(() => {
-  if(!token.value) {
+  if (!token.value) {
     navigateTo('/auth/login')
   }
 })
@@ -41,6 +42,13 @@ const items = ref([
     items: [
       {
         label: 'Objects list',
+        icon: 'pi pi-bars',
+        command: () => {
+          navigateTo('/objects')
+        }
+      },
+      {
+        label: 'Objects tree',
         icon: 'pi pi-bars',
         command: () => {
           navigateTo('/objects')
