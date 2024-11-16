@@ -1,9 +1,20 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, Path
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
 
 router = APIRouter(tags=["objects"])
+
+
+def calculate_counts(node):
+    if "children" in node and node["children"]:
+        count = 0
+        for child in node["children"]:
+            count += calculate_counts(child)
+        node["data"]["counts"] = count
+        return count
+    else:
+        return 1
 
 
 @router.get("/objects/tree/")
@@ -95,5 +106,7 @@ async def objects_tree(
                         },
                     }
                     kust_node["children"].append(well_node)
+
+    calculate_counts(ngdu_node)
 
     return ngdu_node
