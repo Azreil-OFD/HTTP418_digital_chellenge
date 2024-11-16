@@ -1,20 +1,19 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, Path
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
 
 router = APIRouter(tags=["objects"])
 
-VALID_TYPES = {"well", "ngdu", "cdng", "kust", "mest"}
-VALID_ORDER_FIELDS = {"name", "debit", "ee_consume", "expenses", "pump_operating"}
+VALID_ORDER_FIELDS = {"date_add", "debit", "ee_consume", "expenses", "pump_operating"}
 VALID_ORDER_DIRECTIONS = {"asc", "desc"}
 VALID_MODES = {"history", "plan"}
 
 
-@router.get("/api/objects/search/")
+@router.get("/objects/search/")
 async def search_objects(
     obj_id: int = Query(..., description="Object id"),
-    order_field: str = Query("name", description="Field to order by", example="name"),
+    order_field: str = Query("date_add", description="Field to order by", example="date_add"),
     order_direction: str = Query("asc", description="Order direction (asc or desc)", example="asc"),
     page: int = Query(1, ge=1, description="Page number", example=1),
     per_page: int = Query(50, ge=1, le=100, description="Number of items per page", example=50),
@@ -31,11 +30,11 @@ async def search_objects(
 
     query = text(f"""
         SELECT date_add,
-               sum(debit),
-               sum(ee_consume),
-               sum(expenses),
-               sum(pump_operating)
-        FROM well_day_histories
+               sum(debit) as debit,
+               sum(ee_consume) as ee_consume,
+               sum(expenses) as expenses,
+               sum(pump_operating) as pump_operating
+        FROM {'well_day_histories' if mode == 'history' else 'well_day_plans'}
         WHERE well IN (SELECT well
                        FROM wells
                        WHERE well = :obj_id
@@ -44,7 +43,7 @@ async def search_objects(
                           OR kust = :obj_id
                           OR mest = :obj_id)
         GROUP BY date_add
-        ORDER BY date_add
+        ORDER BY {order_field} {'asc' if order_direction == 'asc' else 'desc'}
         LIMIT :limit OFFSET :offset;
     """)
 
@@ -65,7 +64,7 @@ async def search_objects(
     ]
 
 
-@router.get("/api/objects/tree/")
+@router.get("/objects/tree/")
 async def search_objects(
     obj_id: int = Query(..., description="Object id"),
     session: AsyncSession = Depends(get_session),
@@ -145,6 +144,15 @@ async def search_objects(
                     "children": [],
                 }
                 cdng_node["children"].append(kust_node)
+                for well in wells:
+                    well_node = {
+                        "key": well,
+                        "type": "well",
+                        "data": {
+                            "name": objects_map.get(well, {}).get("name", f"Скважина {well}"),
+                        },
+                    }
+                    kust_node["children"].append(well_node)
 
     return ngdu_node
 
@@ -165,3 +173,22 @@ async def get_area(session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=404, detail="No area found")
 
     return [{"id": obj[0], "name": obj[1]} for obj in objects]
+
+
+@router.get("/objects/{obj_id}")
+async def get_area(
+    obj_id: int = Path(..., description="Object ID"),
+    session: AsyncSession = Depends(get_session),
+):
+    result = await session.execute(text("""
+        SELECT objects.id, objects.name, objects_type.name as type
+        FROM objects
+        LEFT JOIN objects_type ON objects.id = objects_type.id
+        WHERE objects.id = :obj_id
+    """), {"obj_id": obj_id})
+
+    obj = result.fetchone()
+    if not obj:
+        raise HTTPException(status_code=404, detail="No area found")
+
+    return {"id": obj[0], "name": obj[1], "type": obj[2]}
