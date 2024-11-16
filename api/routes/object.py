@@ -63,3 +63,82 @@ async def search_objects(
             "pump_operating": row[4],
         } for row in result.fetchall()
     ]
+
+
+@router.get("/api/objects/tree/")
+async def search_objects(
+    obj_id: int = Query(..., description="Object id"),
+    session: AsyncSession = Depends(get_session),
+):
+    result_tree = (await session.execute(
+        text(f"""
+            SELECT 
+                ngdu,
+                cdng,
+                kust
+            FROM wells
+            WHERE ngdu = :obj_id;
+        """), {"obj_id": obj_id})).fetchall()
+
+    if not result_tree:
+        raise HTTPException(status_code=404, detail="No data found for the given obj_id.")
+
+    uniq_ids = set()
+    mest_groups = {}
+
+    for row in result_tree:
+        mest, cdng, kust = row
+
+        if mest not in mest_groups:
+            mest_groups[mest] = {}
+        if cdng not in mest_groups[mest]:
+            mest_groups[mest][cdng] = []
+
+        mest_groups[mest][cdng].append(kust)
+        uniq_ids.update([mest, cdng, kust])
+
+    objects_map = {}
+    for row in (await session.execute(
+            text("SELECT id, name, type FROM objects WHERE id = ANY(:ids)"),
+            {"ids": list(uniq_ids)})).fetchall():
+        objects_map[row[0]] = {"name": row[1]}
+
+    mest_node = {
+        "key": "0",
+        "type": "main",
+        "data": {
+            "name": objects_map.get(obj_id, {}).get("name", "Месторождение"),
+        },
+        "children": [],
+    }
+
+    for mest, cdngs in mest_groups.items():
+        mest_node = {
+            "key": mest,
+            "type": "workshop",
+            "data": {
+                "name": objects_map.get(mest, {}).get("name", f"Месторождение {mest}"),
+            },
+            "children": [],
+        }
+        for cdng, kusts in cdngs.items():
+            cdng_node = {
+                "key": cdng,
+                "type": "cdng",
+                "data": {
+                    "name": objects_map.get(cdng, {}).get("name", f"ЦДНГ {cdng}"),
+                },
+                "children": [],
+            }
+            mest_node["children"].append(cdng_node)
+            for kust in kusts:
+                kust_node = {
+                    "key": kust,
+                    "type": "kust",
+                    "data": {
+                        "name": objects_map.get(kust, {}).get("name", f"Куст {kust}"),
+                    },
+                }
+                cdng_node["children"].append(kust_node)
+
+    return mest_node
