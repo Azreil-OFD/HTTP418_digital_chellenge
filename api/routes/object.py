@@ -98,7 +98,7 @@ async def search_objects(
             mest_groups[ngdu][cdng][kust] = []
 
         mest_groups[ngdu][cdng][kust].append(well)
-        uniq_ids.update([ngdu, cdng, kust, well])
+        uniq_ids.update([ngdu, cdng, kust])
 
     objects_map = {}
     for row in (await session.execute(
@@ -107,7 +107,7 @@ async def search_objects(
     )).fetchall():
         objects_map[row[0]] = {"name": row[1]}
 
-    tree = {
+    ngdu_node = {
         "key": "0",
         "type": "main",
         "data": {
@@ -125,7 +125,6 @@ async def search_objects(
             },
             "children": [],
         }
-        tree["children"].append(ngdu_node)
         for cdng, kusts in cdngs.items():
             cdng_node = {
                 "key": cdng,
@@ -146,17 +145,8 @@ async def search_objects(
                     "children": [],
                 }
                 cdng_node["children"].append(kust_node)
-                for well in wells:
-                    well_node = {
-                        "key": well,
-                        "type": "well",
-                        "data": {
-                            "name": objects_map.get(well, {}).get("name", f"Скважина {well}"),
-                        },
-                    }
-                    kust_node["children"].append(well_node)
 
-    return tree
+    return ngdu_node
 
 
 @router.get("/objects/get_area")
