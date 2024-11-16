@@ -12,13 +12,22 @@
 </template>
 
 <script>
+import { onMounted, ref, watch } from 'vue';
+
 export default {
+  props: {
+    centerPosition: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       scale: 1,
       isDragging: false,
       lastMousePosition: { x: 0, y: 0 },
-      position: { x: 0, y: 0 }
+      position: { x: 0, y: 0 },
+      objectSize: { width: 0, height: 0 }
     };
   },
   computed: {
@@ -27,6 +36,14 @@ export default {
         transform: `translate(${this.position.x}px, ${this.position.y}px) scale(${this.scale})`,
         transition: 'transform 0.1s'
       };
+    }
+  },
+  watch: {
+    centerPosition: {
+      handler(newVal) {
+        this.centerObject(newVal);
+      },
+      deep: true
     }
   },
   methods: {
@@ -53,12 +70,25 @@ export default {
         this.lastMousePosition = { x: touch.clientX, y: touch.clientY };
       }
     },
-    centerObject() {
-      const container = this.$el.getBoundingClientRect();
-      const object = this.$refs.object.getBoundingClientRect();
-      this.position.x = (container.width - object.width) / 2 - (container.left - object.left);
-      this.position.y = (container.height - object.height) / 2 - (container.top - object.top);
+    centerObject(newPosition) {
+      const { width, height } = this.objectSize;
+      this.position.x = newPosition.x - (width / 2);
+      this.position.y = newPosition.y - (height / 2);
+    },
+    updateObjectSize() {
+      const object = this.$refs.object;
+      if (object) {
+        this.objectSize.width = object.offsetWidth;
+        this.objectSize.height = object.offsetHeight;
+      }
     }
+  },
+  mounted() {
+    this.updateObjectSize();
+    window.addEventListener('resize', this.updateObjectSize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateObjectSize);
   }
 };
 </script>
