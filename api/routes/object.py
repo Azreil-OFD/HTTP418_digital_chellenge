@@ -80,16 +80,12 @@ async def search_objects(
 
 @router.get("/api/objects/get_area")
 async def get_area(session: AsyncSession = Depends(get_session)):
-    # Получаем таблицу, которая соответствует модели 'objects'
     objects_table = get_table("objects")
 
-    # Формируем запрос для получения объектов с type = 5
     query = select(objects_table.c.id, objects_table.c.name).where(objects_table.c.type == 5)
-    # Выполняем запрос
+
     result = await session.execute(query)
 
-    # Извлекаем данные из результата и возвращаем их в виде списка
     objects = result.fetchall()
 
-    # Формируем ответ (список словарей с id и name)
     return [{"id": obj.id, "name": obj.name} for obj in objects]
