@@ -8,6 +8,7 @@
     "fastapi-dev": "pip3 install -r requirements.txt && python3 -m uvicorn api.index:app --reload",
     "nuxt-dev": "nuxt dev",
     "dev": "concurrently \"npm run nuxt-dev\" \"npm run fastapi-dev\"",
+    "devh": "concurrently \"npm run nuxt-dev\" \"npm run fastapi-dev\" \"tuna http 3000 --subdomain=tessst\"",
     "prod": "concurrently \"npm run preview\" \"npm run fastapi-dev\" \"tuna http 3000 --subdomain=tessst\"",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

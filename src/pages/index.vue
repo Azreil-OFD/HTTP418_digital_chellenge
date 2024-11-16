@@ -10,7 +10,13 @@ const Markups = [
 
 <template>
     <div class="flex main">
-        <MapboxMap map-id="map" style="position: absolute; height: 110%; width: 75%; left: 0; top: 0; z-index: -10;  "
+        <Card style="width: 40vh;" class="h-full" >
+            <template #title>Месторождения</template>
+            <template #content>
+               
+            </template>
+        </Card>
+        <MapboxMap map-id="map" style="position: absolute; height: 110%; width: 100%; left: 0; top: 0; z-index: -10;  "
             :options="{
                 style: 'mapbox://styles/mapbox/light-v11',
                 center: [-68.137343, 45.137451],

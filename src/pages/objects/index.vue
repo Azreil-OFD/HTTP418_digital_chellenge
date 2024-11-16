@@ -3,44 +3,46 @@
         <Select v-model="selectedArea" :options="area" optionLabel="name" placeholder="Выберите месторождение"
             class="w-full md:w-56" />
     </div>
-    <OrganizationChart v-if="selectedArea" class="card flex justify-center mt-5" v-model:selectionKeys="selection" collapsible
-        selectionMode="single" :value="data">
-        <template #main="slotProps">
-            <div class="flex flex-col">
-                <div class="flex flex-col items-center">
-                    <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+    <div style="overflow-y:scroll;">
+        <OrganizationChart v-if="selectedArea" class="card flex justify-center mt-5 w-full" style="width: fit-content;"
+            v-model:selectionKeys="selection" collapsible selectionMode="single" :value="data">
+            <template #main="slotProps">
+                <div class="flex flex-col">
+                    <div class="flex flex-col items-center">
+                        <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+                    </div>
                 </div>
-            </div>
-        </template>
-        <template #workshop="slotProps" collapsible>
-            <div class="flex flex-col">
-                <div class="flex flex-col items-center">
-                    <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+            </template>
+            <template #workshop="slotProps" collapsible>
+                <div class="flex flex-col">
+                    <div class="flex flex-col items-center">
+                        <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+                    </div>
                 </div>
-            </div>
-        </template>
-        <template #bush="slotProps" collapsible>
-            <span>{{ slotProps.node.data.name }}</span>
-        </template>
-        <template #well="slotProps" collapsible>
-            <span>{{ slotProps.node.data.name }}</span>
-        </template>
-    </OrganizationChart>
+            </template>
+            <template #bush="slotProps" collapsible>
+                <span>{{ slotProps.node.data.name }}</span>
+            </template>
+            <template #well="slotProps" collapsible>
+                <span>{{ slotProps.node.data.name }}</span>
+            </template>
+        </OrganizationChart>
+    </div>
+    <span v-if="selectedArea">Скролл >></span>
 </template>
 
 <script setup>
 import { ref } from "vue";
 
-const selectedArea= ref();
+const selectedArea = ref();
 const area = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
+    { name: 'КедрНефть', code: 'KN' },
+    { name: 'СоснаНефть', code: 'SN' },
+    { name: 'ЛиственницаНефть', code: 'LN' },
+    { name: 'ТуяНефть', code: 'TN' }
 ]);
-watch(selectedArea , () => {
-    
+watch(selectedArea, () => {
+
 })
 const data = ref({
     type: 'main',
@@ -68,7 +70,7 @@ const data = ref({
                             key: '0_0_0_1',
                             type: 'well',
                             data: {
-                            
+
                                 name: 'скважина 1',
                             }
                         },
@@ -133,8 +135,8 @@ const data = ref({
 });
 const selection = ref({});
 watch(selection, () => {
-    if(Object.keys(selection.value).length !== 0)
-        if(Object.keys(selection.value)[0] !== 'undefined' )
-            navigateTo('/objects/' + Object.keys(selection.value)[0])
+    if (Object.keys(selection.value).length !== 0)
+        if (Object.keys(selection.value)[0] !== 'undefined')
+            navigateTo('/objects/select/' + Object.keys(selection.value)[0])
 })
 </script>
