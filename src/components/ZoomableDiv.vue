@@ -52,6 +52,12 @@ export default {
         this.position.y += dy;
         this.lastMousePosition = { x: touch.clientX, y: touch.clientY };
       }
+    },
+    centerObject() {
+      const container = this.$el.getBoundingClientRect();
+      const object = this.$refs.object.getBoundingClientRect();
+      this.position.x = (container.width - object.width) / 2 - (container.left - object.left);
+      this.position.y = (container.height - object.height) / 2 - (container.top - object.top);
     }
   }
 };
@@ -60,7 +66,7 @@ export default {
 <style scoped>
 .container {
   width: 100%;
-  height: 50vh;
+  height: 100vh;
   overflow: hidden;
   position: relative;
   border: 1px solid #ccc;

@@ -3,7 +3,7 @@
         <Select v-model="selectedArea" :options="area" optionLabel="name" placeholder="Выберите месторождение"
             class="w-full md:w-56" />
     </div>
-    <ZoomableDiv>
+    <ZoomableDiv :ref="zoomable">
         <OrganizationChart v-if="selectedArea" class="card flex justify-center mt-5 w-full" style="width: fit-content;"
             v-model:selectionKeys="selection" collapsible selectionMode="single" :value="data">
             <template #main="slotProps">
@@ -32,7 +32,7 @@
 
 <script setup>
 import { ref } from "vue";
-
+const zoomable = ref()
 const selectedArea = ref();
 const area = ref([
     { name: 'КедрНефть', code: 'KN' },
@@ -41,7 +41,7 @@ const area = ref([
     { name: 'ТуяНефть', code: 'TN' }
 ]);
 watch(selectedArea, () => {
-
+    zoomable.centerObject()
 })
 const data = ref({
   "key": 1,
