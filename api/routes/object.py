@@ -63,3 +63,20 @@ async def search_objects(
             "pump_operating": row[4],
         } for row in result.fetchall()
     ]
+
+@router.get("/objects/get_area")
+async def get_area(session: AsyncSession = Depends(get_session)):
+    query = text("""
+        SELECT id, name
+        FROM objects
+        WHERE type = :type
+    """)
+    
+    result = await session.execute(query, {"type": 1})
+    
+    objects = result.fetchall()
+
+    if not objects:
+        raise HTTPException(status_code=404, detail="No area found")
+
+    return [{"id": obj[0], "name": obj[1]} for obj in objects]
