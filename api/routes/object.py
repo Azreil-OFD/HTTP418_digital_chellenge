@@ -71,11 +71,12 @@ async def search_objects(
     session: AsyncSession = Depends(get_session),
 ):
     result_tree = (await session.execute(
-        text(f"""
+        text("""
             SELECT 
                 ngdu,
                 cdng,
-                kust
+                kust,
+                well
             FROM wells
             WHERE ngdu = :obj_id;
         """), {"obj_id": obj_id})).fetchall()
@@ -87,23 +88,26 @@ async def search_objects(
     mest_groups = {}
 
     for row in result_tree:
-        mest, cdng, kust = row
+        ngdu, cdng, kust, well = row
 
-        if mest not in mest_groups:
-            mest_groups[mest] = {}
-        if cdng not in mest_groups[mest]:
-            mest_groups[mest][cdng] = []
+        if ngdu not in mest_groups:
+            mest_groups[ngdu] = {}
+        if cdng not in mest_groups[ngdu]:
+            mest_groups[ngdu][cdng] = {}
+        if kust not in mest_groups[ngdu][cdng]:
+            mest_groups[ngdu][cdng][kust] = []
 
-        mest_groups[mest][cdng].append(kust)
-        uniq_ids.update([mest, cdng, kust])
+        mest_groups[ngdu][cdng][kust].append(well)
+        uniq_ids.update([ngdu, cdng, kust, well])
 
     objects_map = {}
     for row in (await session.execute(
-            text("SELECT id, name, type FROM objects WHERE id = ANY(:ids)"),
-            {"ids": list(uniq_ids)})).fetchall():
+        text("SELECT id, name, type FROM objects WHERE id = ANY(:ids)"),
+        {"ids": list(uniq_ids)}
+    )).fetchall():
         objects_map[row[0]] = {"name": row[1]}
 
-    mest_node = {
+    tree = {
         "key": "0",
         "type": "main",
         "data": {
@@ -112,33 +116,45 @@ async def search_objects(
         "children": [],
     }
 
-    for mest, cdngs in mest_groups.items():
-        mest_node = {
-            "key": mest,
-            "type": "workshop",
+    for ngdu, cdngs in mest_groups.items():
+        ngdu_node = {
+            "key": ngdu,
+            "type": "main",
             "data": {
-                "name": objects_map.get(mest, {}).get("name", f"Месторождение {mest}"),
+                "name": objects_map.get(ngdu, {}).get("name", f"Цех {ngdu}"),
             },
             "children": [],
         }
+        tree["children"].append(ngdu_node)
         for cdng, kusts in cdngs.items():
             cdng_node = {
                 "key": cdng,
-                "type": "cdng",
+                "type": "workshop",
                 "data": {
                     "name": objects_map.get(cdng, {}).get("name", f"ЦДНГ {cdng}"),
                 },
                 "children": [],
             }
-            mest_node["children"].append(cdng_node)
-            for kust in kusts:
+            ngdu_node["children"].append(cdng_node)
+            for kust, wells in kusts.items():
                 kust_node = {
                     "key": kust,
-                    "type": "kust",
+                    "type": "bush",
                     "data": {
                         "name": objects_map.get(kust, {}).get("name", f"Куст {kust}"),
                     },
+                    "children": [],
                 }
                 cdng_node["children"].append(kust_node)
+                for well in wells:
+                    well_node = {
+                        "key": well,
+                        "type": "well",
+                        "data": {
+                            "name": objects_map.get(well, {}).get("name", f"Скважина {well}"),
+                        },
+                    }
+                    kust_node["children"].append(well_node)
 
-    return mest_node
+    return tree
+
