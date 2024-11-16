@@ -1,9 +1,9 @@
 <template>
     <div class="card flex justify-center">
-        <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Выберите месторождение"
+        <Select v-model="selectedArea" :options="area" optionLabel="name" placeholder="Выберите месторождение"
             class="w-full md:w-56" />
     </div>
-    <OrganizationChart class="card flex justify-center mt-5" v-model:selectionKeys="selection" collapsible
+    <OrganizationChart v-if="selectedArea" class="card flex justify-center mt-5" v-model:selectionKeys="selection" collapsible
         selectionMode="single" :value="data">
         <template #main="slotProps">
             <div class="flex flex-col">
@@ -31,16 +31,18 @@
 <script setup>
 import { ref } from "vue";
 
-const selectedCity = ref();
-const cities = ref([
+const selectedArea= ref();
+const area = ref([
     { name: 'New York', code: 'NY' },
     { name: 'Rome', code: 'RM' },
     { name: 'London', code: 'LDN' },
     { name: 'Istanbul', code: 'IST' },
     { name: 'Paris', code: 'PRS' }
 ]);
+watch(selectedArea , () => {
+    
+})
 const data = ref({
-    key: '0',
     type: 'main',
     data: {
         name: 'Месторождение',
@@ -57,9 +59,12 @@ const data = ref({
                     key: '0_0_1',
                     type: 'bush',
                     data: {
+                        id: 1,
                         name: 'куст 1',
+
                     }, children: [
                         {
+                            id: 2,
                             key: '0_0_0_1',
                             type: 'well',
                             data: {
@@ -68,6 +73,7 @@ const data = ref({
                             }
                         },
                         {
+                            id: 3,
                             key: '0_0_0_2',
                             type: 'well',
                             data: {
@@ -80,9 +86,11 @@ const data = ref({
                     key: '0_0_2',
                     type: 'bush',
                     data: {
+                        id: 3,
                         name: 'куст 2',
                     }, children: [
                         {
+                            id: 4,
                             key: '0_0_2_0',
                             type: 'well',
                             data: {
@@ -90,6 +98,7 @@ const data = ref({
                             }
                         },
                         {
+                            id: 5,
                             key: '0_0_2_1',
                             type: 'well',
                             data: {
@@ -104,6 +113,7 @@ const data = ref({
             key: '0_1',
             type: 'bush',
             data: {
+                id: 6,
                 name: 'Anna Fali',
                 type: 'person',
             },
@@ -112,6 +122,7 @@ const data = ref({
                     key: '0_1_1',
                     type: 'well',
                     data: {
+                        id: 7,
                         name: 'Anna Fali',
                         type: 'person',
                     }
@@ -121,4 +132,9 @@ const data = ref({
     ]
 });
 const selection = ref({});
+watch(selection, () => {
+    if(Object.keys(selection.value).length !== 0)
+        if(Object.keys(selection.value)[0] !== 'undefined' )
+            navigateTo('/objects/' + Object.keys(selection.value)[0])
+})
 </script>
