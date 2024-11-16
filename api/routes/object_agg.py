@@ -55,16 +55,18 @@ async def search_objects(
 
     total_count = (await session.execute(
         text(f"""
-        SELECT count(*) FROM {'well_day_histories' if mode == 'history' else 'well_day_plans'}
+        SELECT count(*)
+        FROM {'well_day_histories' if mode == 'history' else 'well_day_plans'}
         WHERE well IN (
-           SELECT well
-           FROM wells
-           WHERE well = :obj_id
-              OR ngdu = :obj_id
-              OR cdng = :obj_id
-              OR kust = :obj_id
-              OR mest = :obj_id)
-        GROUP BY date_add"""), {"obj_id": obj_id}
+            SELECT well
+               FROM wells
+               WHERE well = :obj_id
+                  OR ngdu = :obj_id
+                  OR cdng = :obj_id
+                  OR kust = :obj_id
+                  OR mest = :obj_id
+            );
+        """), {"obj_id": obj_id}
     )).fetchone()[0]
 
     return {
