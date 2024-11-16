@@ -41,7 +41,7 @@ async def objects_list(
 
     result = await session.execute(query, {
         "limit": per_page,
-        "offset": per_page * page
+        "offset": per_page * (page - 1)
     })
 
     total_count = (await session.execute(

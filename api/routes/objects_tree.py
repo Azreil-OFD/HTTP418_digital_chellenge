@@ -7,7 +7,7 @@ router = APIRouter(tags=["objects"])
 
 
 @router.get("/objects/tree/")
-async def search_objects(
+async def objects_tree(
     obj_id: int = Query(..., description="Object id"),
     session: AsyncSession = Depends(get_session),
 ):

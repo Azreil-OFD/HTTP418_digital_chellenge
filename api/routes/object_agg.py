@@ -50,7 +50,7 @@ async def search_objects(
     result = await session.execute(query, {
         "obj_id": obj_id,
         "limit": per_page,
-        "offset": per_page*page
+        "offset": per_page*(page - 1)
     })
 
     total_count = (await session.execute(
@@ -83,22 +83,3 @@ async def search_objects(
             } for row in result.fetchall()
         ]
     }
-
-
-@router.get("/objects/get_area")
-async def get_area(session: AsyncSession = Depends(get_session)):
-    query = text("""
-        SELECT id, name
-        FROM objects
-        WHERE type = :type
-    """)
-    
-    result = await session.execute(query, {"type": 1})
-    
-    objects = result.fetchall()
-
-    if not objects:
-        raise HTTPException(status_code=404, detail="No area found")
-
-    return [{"id": obj[0], "name": obj[1]} for obj in objects]
-
