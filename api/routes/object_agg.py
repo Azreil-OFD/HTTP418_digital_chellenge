@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException, Path
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
+from api.routes.utils.security import get_user_id
 
 router = APIRouter(tags=["objects"])
 
@@ -20,6 +21,7 @@ async def search_objects(
     mode: str = Query("history", description="Mode (history or plan)", example="history"),
 
     session: AsyncSession = Depends(get_session),
+    _: int = Depends(get_user_id),
 ):
     if order_field not in VALID_ORDER_FIELDS:
         raise HTTPException(status_code=400, detail=f"Invalid order_field. Valid fields: {', '.join(VALID_ORDER_FIELDS)}")

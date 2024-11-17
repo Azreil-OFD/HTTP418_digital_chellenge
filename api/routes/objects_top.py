@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
+from api.routes.utils.security import get_user_id
 
 router = APIRouter(tags=["objects"])
 
@@ -13,13 +14,14 @@ VALID_ORDER_DIRECTIONS = {"asc", "desc"}
 
 @router.get("/objects/tops/")
 async def tops_objects(
-        order_field: str = Query("debit", description="""Field to order by: {"debit", "ee_consume", "expenses", "pump_operating"}""", example="debit"),
-        order_direction: str = Query("asc", description="Order direction (asc or desc)", example="asc"),
-        date_from: datetime.date = Query(None, description="Date from", example="2024-01-01"),
-        date_to: datetime.date = Query(None, description="Date to", example="2024-12-31"),
-        counts: int = Query(10, le=100, description="tops count", example=10),
+    order_field: str = Query("debit", description="""Field to order by: {"debit", "ee_consume", "expenses", "pump_operating"}""", example="debit"),
+    order_direction: str = Query("asc", description="Order direction (asc or desc)", example="asc"),
+    date_from: datetime.date = Query(None, description="Date from", example="2024-01-01"),
+    date_to: datetime.date = Query(None, description="Date to", example="2024-12-31"),
+    counts: int = Query(10, le=100, description="tops count", example=10),
 
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
+    _: int = Depends(get_user_id),
 ):
     if order_field not in VALID_ORDER_FIELDS:
         raise HTTPException(status_code=400,

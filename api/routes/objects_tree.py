@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
+from api.routes.utils.security import get_user_id
 
 router = APIRouter(tags=["objects"])
 
@@ -21,6 +22,7 @@ def calculate_counts(node):
 async def objects_tree(
     obj_id: int = Query(..., description="Object id"),
     session: AsyncSession = Depends(get_session),
+    _: int = Depends(get_user_id),
 ):
     result_tree = (await session.execute(
         text("""

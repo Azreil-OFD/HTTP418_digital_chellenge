@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
+from api.routes.utils.security import get_user_id
 
 router = APIRouter(tags=["objects"])
 
@@ -9,6 +10,7 @@ router = APIRouter(tags=["objects"])
 @router.get("/objects/map")
 async def objects_map(
     session: AsyncSession = Depends(get_session),
+    _: int = Depends(get_user_id),
 ):
     query = text("""
         SELECT 
