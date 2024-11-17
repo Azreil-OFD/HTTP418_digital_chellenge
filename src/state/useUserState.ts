@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { ref, onMounted } from 'vue';
 
 export const useUserState = defineStore("userState", () => {
   const token = ref<string>("");
@@ -14,20 +13,16 @@ export const useUserState = defineStore("userState", () => {
 
   async function login(login: string, password: string): Promise<boolean> {
     try {
-      const response: {
-         
-        data: {token: string}
-        statusCode: number
-      } = await $fetch('/backend/auth/login/', {
+      const response = await $fetch('/backend/auth/login/', {
         method: 'POST',
-        body: { login, password }
+        body: { login, password },
       });
-
-      if (response.statusCode === 200) {
+      if (response?.data.token) {
         token.value = response.data.token;
         localStorage.setItem("token", token.value);
         return true;
       } else {
+        console.error("Login failed: No token received");
         return false;
       }
     } catch (error) {
@@ -38,16 +33,17 @@ export const useUserState = defineStore("userState", () => {
 
   async function registration(login: string, password: string): Promise<boolean> {
     try {
-      const response = await $fetch('/backend/auth/registration/', {
+      const response = await $fetch('/api/registration/', {
         method: 'POST',
-        body: { login, password }
+        body: { login, password },
       });
 
-      if (response.statusCode === 200) {
+      if (response?.statusCode === 200 && response?.data?.token) {
         token.value = response.data.token;
         localStorage.setItem("token", token.value);
         return true;
       } else {
+        console.error("Registration failed: Invalid response");
         return false;
       }
     } catch (error) {
@@ -60,5 +56,5 @@ export const useUserState = defineStore("userState", () => {
     return !!token.value; // Возвращает true, если токен существует, иначе false
   }
 
-  return {token , login, registration, isAuthenticated };
+  return { token, login, registration, isAuthenticated };
 });

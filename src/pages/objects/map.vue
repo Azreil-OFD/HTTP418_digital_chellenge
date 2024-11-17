@@ -9,22 +9,17 @@ const Markups = ref([]);
 // Загружаем данные из API
 onMounted(async () => {
     try {
-
         const response = await axios.get('/api/objects/map', {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }
         });
-
         Markups.value = response.data.map((item) => ({
             markerId: item.id,
             name: item.name,
             lnglat: [item.coordinates.lon, item.coordinates.lat],
             isVisible: true,
         }));
-
-
-
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
     }

@@ -15,7 +15,6 @@ export default defineNuxtConfig({
     accessToken: 'pk.eyJ1Ijoic3ZjLW9rdGEtbWFwYm94LXN0YWZmLWFjY2VzcyIsImEiOiJjbG5sMnExa3kxNTJtMmtsODJld24yNGJlIn0.RQ4CHchAYPJQZSiUJ0O3VQ'
 
   },
-
   primevue: {
     options: {
       theme: {
@@ -24,7 +23,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   srcDir: "src/",
   routeRules: {
     "/api/**": {
