@@ -5,9 +5,9 @@ CREATE TABLE IF NOT EXISTS objects_coordinates(
 );
 
 INSERT INTO objects_coordinates (id, lat, lon)
-    SELECT 
-        id, 
-        60 + (RANDOM() * (65 - 60)),
-        60 + (RANDOM() * (75 - 60))
-    FROM objects
-    WHERE type = 4;
+SELECT
+    id,
+    55 + (RANDOM() * (67 - 55)),
+    60 + (RANDOM() * (80 - 60))
+FROM objects
+WHERE type = 3;
