@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.db import get_session
+from api.routes.utils.security import get_user_id
 
 router = APIRouter(tags=["objects"])
 
@@ -24,6 +25,7 @@ async def objects_list(
         per_page: int = Query(50, ge=1, le=2000, description="Number of items per page", example=50),
 
         session: AsyncSession = Depends(get_session),
+        _: int = Depends(get_user_id),
 ):
     if order_direction not in VALID_ORDER_DIRECTIONS:
         raise HTTPException(status_code=400, detail=f"Invalid order_direction. Valid directions: asc, desc")
