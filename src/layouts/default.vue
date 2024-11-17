@@ -41,27 +41,27 @@ const items = ref([
     icon: 'pi pi-server',
     items: [
       {
-        label: 'Objects list',
+        label: 'List',
         icon: 'pi pi-bars',
         command: () => {
           navigateTo('/objects/list')
         }
       },
       {
-        label: 'Objects tree',
+        label: 'Tree',
         icon: 'pi pi-bars',
         command: () => {
           navigateTo('/objects')
         }
       }, {
-        label: 'Objects top',
+        label: 'Top',
         icon: 'pi pi-bars',
         command: () => {
           navigateTo('/objects/top')
         }
       },
       {
-        label: 'Objects map',
+        label: 'Map',
         icon: 'pi pi-bars',
         command: () => {
           navigateTo('/objects/map')

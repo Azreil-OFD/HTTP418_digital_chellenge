@@ -1,6 +1,6 @@
 <template>
     <div class="card flex-col">
-        <div class="card flex justify-center  ">
+        <div class="card flex justify-start  ">
             <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a City"
                 class="w-full md:w-56" @change="onPageChange()" />
         </div>

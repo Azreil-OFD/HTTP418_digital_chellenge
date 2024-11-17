@@ -2,7 +2,7 @@
     <div class="flex items-center justify-center mt-20">
         <div class="card p-6 border rounded-lg border-gray-200">
             <div class="flex flex-col gap-1 w-full items-center justify-center">
-                <SelectButton v-model="selection" name="selection"  :options="['Вход']" />
+                <SelectButton v-model="selection" name="selection" disabled  :options="['Вход']" />
             </div>
             <div v-if="error" class="p-4 m-3 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
                 role="alert">

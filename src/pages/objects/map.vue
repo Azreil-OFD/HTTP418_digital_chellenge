@@ -10,6 +10,21 @@ const Markups = ref([]);
 onMounted(async () => {
     try {
 
+        const response = await axios.get('/api/objects/map', {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        Markups.value = response.data.map((item) => ({
+            markerId: item.id,
+            name: item.name,
+            lnglat: [item.coordinates.lon, item.coordinates.lat],
+            isVisible: true,
+        }));
+
+
+
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
     }
@@ -32,16 +47,30 @@ const togglePopup = (markerId) => {
                 center: [64.94895931101014, 64.7513899266245],
                 zoom: 5
             }">
-            <MapboxDefaultMarker v-for="item in Markups" :key="item.markerId" :popup-id="'popup-' + item.markerId"
-                :lnglat="item.lnglat" @click="togglePopup(item.markerId)">
-                <MapboxDefaultPopup :popup-id="`popup-${item.markerId}`" :lnglat="item.lnglat" :options="{
-                    closeOnClick: true,
-                }">
-                    <h1 class="test" @click="goToPage(item.markerId)">
-                        {{ item.name }}
-                    </h1>
-                </MapboxDefaultPopup>
-            </MapboxDefaultMarker>
+            <MapboxDefaultPopup popup-id="<POPUP_ID>1" :lnglat="[64.94895931101014, 64.7513899266245]" :options="{
+                closeOnClick: false,
+                closeButton: false
+            }">
+                <h1 class="test">
+                    <a href="/objects/select/1111">1111</a>
+                </h1>
+            </MapboxDefaultPopup>
+            <MapboxDefaultPopup popup-id="<POPUP_ID>2" :lnglat="[67, 64.7513899266245]" :options="{
+                closeOnClick: false,
+                closeButton: false
+            }">
+                <h1 class="test">
+                    <a href="/objects/select/111">111</a>
+                </h1>
+            </MapboxDefaultPopup>
+            <MapboxDefaultPopup popup-id="<POPUP_ID>3" :lnglat="[64.94895931101014, 67.7513899266245]" :options="{
+                closeOnClick: false,
+                closeButton: false
+            }">
+                <h1 class="test">
+                    <a href="/objects/select/222">222</a>
+                </h1>
+            </MapboxDefaultPopup>
         </MapboxMap>
     </div>
 </template>

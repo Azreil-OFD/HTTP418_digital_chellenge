@@ -11,9 +11,12 @@
     </ButtonGroup>
     <DataTable :value="tops" class="w-full" :rows="10" responsive-layout="scroll" row-hover>
       <Column field="id" header="ID" />
-      <Column field="name" header="Скважина" />
-      <Column field="value" header="Дебет (m³)" />
-      <Column field="units" header="Единицы" />
+      <Column field="name" header="Well name" />
+      <Column field="value" header="Value" style="min-width: 12rem">
+        <template #body="{ data }">
+          {{ data.value.toFixed(2) }} {{ data.units }}
+        </template>
+      </Column>
     </DataTable>
   </div>
 </template>

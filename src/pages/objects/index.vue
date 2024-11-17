@@ -1,5 +1,5 @@
 <template>
-    <div class="card flex justify-center">
+    <div class="card flex justify-start">
         <Select v-model="selectedArea" :options="area" optionLabel="name" placeholder="Выберите месторождение"
             class="w-full md:w-56" />
     </div>
@@ -10,7 +10,7 @@
                 <div class="flex flex-col">
                     <div class="flex flex-col items-center">
                         <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
-                        <span>{{ slotProps.node.data.counts }} well</span>
+                        <span>{{ slotProps.node.data.counts }} wells</span>
                     </div>
                 </div>
             </template>
@@ -18,13 +18,13 @@
                 <div class="flex flex-col">
                     <div class="flex flex-col items-center">
                         <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
-                        <span>{{ slotProps.node.data.counts }} well</span>
+                        <span>{{ slotProps.node.data.counts }} wells</span>
                     </div>
                 </div>
             </template>
             <template #bush="slotProps" collapsible>
                 <span>{{ slotProps.node.data.name }}</span> <br>
-                <span>{{ slotProps.node.data.counts }} well</span>
+                <span>{{ slotProps.node.data.counts }} wells</span>
             </template>
             <template #well="slotProps" collapsible>
                 <span>{{ slotProps.node.data.name }}</span>
