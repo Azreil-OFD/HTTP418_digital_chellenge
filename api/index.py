@@ -8,8 +8,28 @@ from .routes.objects_tree import router as objects_tree_router
 from .routes.objects_crud import router as objects_crud_router
 from .routes.objects_map import router as objects_map_router
 from .routes.objects_top import router as objects_top_router
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:3000",
+    "https://tessst.ru.tuna.am",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 base_router = APIRouter(prefix="/api")
 
