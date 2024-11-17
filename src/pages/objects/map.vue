@@ -9,7 +9,7 @@ const Markups = ref([]);
 // Загружаем данные из API
 onMounted(async () => {
     try {
-        const response = await axios.get('/api/objects/map', {
+        const response = await axios.get('https://backends.ru.tuna.am/api/objects/map', {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('token')
             }

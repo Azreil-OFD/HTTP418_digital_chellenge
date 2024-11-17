@@ -51,7 +51,7 @@ const selection = ref({});
 // Функция для получения данных из API
 const fetchData = async (objId) => {
     try {
-        const response = await axios.get(`/api/objects/tree/?obj_id=${objId}`, {
+        const response = await axios.get(`https://backends.ru.tuna.am/api/objects/tree/?obj_id=${objId}`, {
             headers: {
                 "Authorization": 'Bearer ' + localStorage.getItem('token')
             }

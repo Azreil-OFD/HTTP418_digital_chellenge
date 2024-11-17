@@ -48,7 +48,7 @@ const naming = ref('')
 let historyData = []
 let planData = []
 const fetchData = async (mode) => {
-  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_field=date_add&order_direction=asc&page=1&per_page=1600&mode=${mode}`, {
+  const response = await fetch(`https://backends.ru.tuna.am/api/objects/search/?obj_id=${route.params.id}&order_field=date_add&order_direction=asc&page=1&per_page=1600&mode=${mode}`, {
     headers: {
             "Authorization": 'Bearer ' +  localStorage.getItem('token')
         }
@@ -62,7 +62,7 @@ onMounted(async () => {
   pickDate.value[1] = historyData.length
   maxPickDate.value = historyData.length
 
-  const getWells = await fetch(`/api/objects/object/${route.params.id}`, {
+  const getWells = await fetch(`https://backends.ru.tuna.am/api/objects/object/${route.params.id}`, {
     headers: {
             "Authorization": 'Bearer ' +  localStorage.getItem('token')
         }

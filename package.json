@@ -21,6 +21,7 @@
     "@primevue/nuxt-module": "^4.2.1",
     "mapbox-gl": "^3.8.0",
     "nuxt": "^3.11.2",
+    "nuxt-delay-hydration": "^1.3.8",
     "nuxt-mapbox": "^1.6.1",
     "vue": "^3.4.23",
     "vue-router": "^4.3.2"

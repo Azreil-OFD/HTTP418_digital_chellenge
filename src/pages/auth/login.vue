@@ -50,12 +50,7 @@ const onFormSubmit = async ({ valid }: { valid: boolean }) => {
         }
         error.value = ""
         let result: boolean = false
-        if (selection.value === 'Вход') {
-            result = await userState.login(email.value, password.value)
-        } else {
-            result = await userState.registration(email.value, password.value)
-        }
-        console.log(result)
+        result = await userState.login(email.value, password.value)
         if (result) {
             navigateTo('/')
         } else {

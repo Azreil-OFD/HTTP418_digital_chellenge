@@ -41,7 +41,7 @@ const cities = ref([
 const currentType = ref('wells');
 
 const fetchProducts = async (type, page = 1) => {
-    const response = await fetch(`/api/objects/list?order_direction=asc&obj_type=${selectedCity.value.code}&page=${page}&per_page=1000`, {
+    const response = await fetch(`https://backends.ru.tuna.am/api/objects/list?order_direction=asc&obj_type=${selectedCity.value.code}&page=${page}&per_page=1000`, {
         headers: {
             "Authorization": 'Bearer ' + localStorage.getItem('token')
         }

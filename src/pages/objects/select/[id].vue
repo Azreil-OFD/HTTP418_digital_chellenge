@@ -92,7 +92,7 @@ const sortDirection = ref('asc')
 onMounted(async () => {
 
 
-  const responsePlan = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value + 1}&per_page=10&mode=plan`, {
+  const responsePlan = await fetch(`https://backends.ru.tuna.am/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value + 1}&per_page=10&mode=plan`, {
     method: 'GET',
     headers: {
       'accept': 'application/json',
@@ -103,7 +103,7 @@ onMounted(async () => {
   const resultPlan = await responsePlan.json()
   dataPlan.value = resultPlan.data;
 
-  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value + 1}&per_page=10&mode=history`, {
+  const response = await fetch(`https://backends.ru.tuna.am/api/objects/search/?obj_id=${route.params.id}&order_direction=asc&page=${page.value + 1}&per_page=10&mode=history`, {
     method: 'GET',
     headers: {
       'accept': 'application/json',
@@ -122,7 +122,7 @@ onMounted(async () => {
 const page = ref(0);
 
 const updatePage = async (sort = 'asc', order_field = '') => {
-  const responsePlan = await fetch(`/api/objects/search/?obj_id=${route.params.id}${selectField.value.code !== '' ? `&order_field=${selectField.value.code}` : ''}&order_direction=${sortDirection.value}&page=${page.value + 1}&per_page=10&mode=plan`, {
+  const responsePlan = await fetch(`https://backends.ru.tuna.am/api/objects/search/?obj_id=${route.params.id}${selectField.value.code !== '' ? `&order_field=${selectField.value.code}` : ''}&order_direction=${sortDirection.value}&page=${page.value + 1}&per_page=10&mode=plan`, {
     method: 'GET',
     headers: {
       'accept': 'application/json',
@@ -133,7 +133,7 @@ const updatePage = async (sort = 'asc', order_field = '') => {
   const resultPlan = await responsePlan.json()
   dataPlan.value = resultPlan.data;
 
-  const response = await fetch(`/api/objects/search/?obj_id=${route.params.id}${selectField.value.code !== '' ? `&order_field=${selectField.value.code}` : ''}&order_direction=${sortDirection.value}&page=${page.value + 1}&per_page=10&mode=history`, {
+  const response = await fetch(`https://backends.ru.tuna.am/api/objects/search/?obj_id=${route.params.id}${selectField.value.code !== '' ? `&order_field=${selectField.value.code}` : ''}&order_direction=${sortDirection.value}&page=${page.value + 1}&per_page=10&mode=history`, {
     method: 'GET',
     headers: {
       'accept': 'application/json',

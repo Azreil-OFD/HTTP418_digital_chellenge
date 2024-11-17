@@ -1,6 +1,7 @@
 import Aura from "@primevue/themes/aura";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   devServer: {
     port: 3000,
     host: '127.0.0.1'
@@ -13,7 +14,6 @@ export default defineNuxtConfig({
   ],
   mapbox: {
     accessToken: 'pk.eyJ1Ijoic3ZjLW9rdGEtbWFwYm94LXN0YWZmLWFjY2VzcyIsImEiOiJjbG5sMnExa3kxNTJtMmtsODJld24yNGJlIn0.RQ4CHchAYPJQZSiUJ0O3VQ'
-
   },
   primevue: {
     options: {
