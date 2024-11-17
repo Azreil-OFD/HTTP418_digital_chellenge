@@ -10,6 +10,7 @@
                 <div class="flex flex-col">
                     <div class="flex flex-col items-center">
                         <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+                        <span>{{ slotProps.node.data.counts }} well</span>
                     </div>
                 </div>
             </template>
@@ -17,11 +18,13 @@
                 <div class="flex flex-col">
                     <div class="flex flex-col items-center">
                         <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+                        <span>{{ slotProps.node.data.counts }} well</span>
                     </div>
                 </div>
             </template>
-            <template #bush="slotProps" collapsible>
-                <span>{{ slotProps.node.data.name }}</span>
+            <template #bush="slotProps" collapsible> 
+                <span>{{ slotProps.node.data.name }}</span> <br>
+                <span>{{ slotProps.node.data.counts }} well</span>
             </template>
             <template #well="slotProps" collapsible>
                 <span>{{ slotProps.node.data.name }}</span>

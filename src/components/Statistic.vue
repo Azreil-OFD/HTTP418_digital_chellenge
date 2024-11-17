@@ -2,8 +2,9 @@
   <div>
     <div class="flex" style="justify-content: space-between; align-items: center;">
       <div v-if="naming">
-        {{ naming.type }}
-      {{ naming.name }}
+    
+      <h1 size="large">    {{ naming.type }}
+        {{ naming.name }}</h1>
       </div>
       <ButtonGroup>
         <Button @click="setField('debit')" label="Debit"

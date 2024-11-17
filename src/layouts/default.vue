@@ -44,7 +44,7 @@ const items = ref([
         label: 'Objects list',
         icon: 'pi pi-bars',
         command: () => {
-          navigateTo('/objects')
+          navigateTo('/objects/list')
         }
       },
       {
@@ -52,13 +52,6 @@ const items = ref([
         icon: 'pi pi-bars',
         command: () => {
           navigateTo('/objects')
-        }
-      },
-      {
-        label: 'Top Objects',
-        icon: 'pi pi-chart-bar',
-        command: () => {
-          navigateTo('/objects/top')
         }
       }
     ]
