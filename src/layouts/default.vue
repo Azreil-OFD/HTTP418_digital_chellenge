@@ -53,7 +53,21 @@ const items = ref([
         command: () => {
           navigateTo('/objects')
         }
+      }, {
+        label: 'Objects top',
+        icon: 'pi pi-bars',
+        command: () => {
+          navigateTo('/objects/top')
+        }
+      },
+      {
+        label: 'Objects map',
+        icon: 'pi pi-bars',
+        command: () => {
+          navigateTo('/objects/map')
+        }
       }
+     
     ]
   }
 ]);

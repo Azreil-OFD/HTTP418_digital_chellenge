@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </template>
-            <template #bush="slotProps" collapsible> 
+            <template #bush="slotProps" collapsible>
                 <span>{{ slotProps.node.data.name }}</span> <br>
                 <span>{{ slotProps.node.data.counts }} well</span>
             </template>
@@ -45,13 +45,17 @@ const area = ref([
     { name: 'ТуяНефть', code: '4' }
 ]);
 
-const data = ref([]); 
+const data = ref([]);
 const selection = ref({});
 
 // Функция для получения данных из API
 const fetchData = async (objId) => {
     try {
-        const response = await axios.get(`/api/objects/tree/?obj_id=${objId}`);
+        const response = await axios.get(`/api/objects/tree/?obj_id=${objId}`, {
+            headers: {
+                "Authorization": 'Bearer ' + localStorage.getItem('token')
+            }
+        });
         console.log(response.data)
         data.value = response.data;
     } catch (error) {

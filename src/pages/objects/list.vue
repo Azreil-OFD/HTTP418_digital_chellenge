@@ -4,15 +4,16 @@
             <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a City"
                 class="w-full md:w-56" @change="onPageChange()" />
         </div>
-        <DataTable :value="products" @row-click="(e) => { navigateTo(`/objects/select/${e.data.id}`)}" paginator :rows="10" :rowsPerPageOptions="[ 10, 20, 50]" tableStyle="min-width: 50rem"
-                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                currentPageReportTemplate="{first} to {last} of {totalRecords}">
+        <DataTable :value="products" @row-click="(e) => { navigateTo(`/objects/select/${e.data.id}`) }" paginator
+            :rows="10" :rowsPerPageOptions="[10, 20, 50]" tableStyle="min-width: 50rem"
+            paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+            currentPageReportTemplate="{first} to {last} of {totalRecords}">
             <template #paginatorstart>
                 <Button type="button" icon="pi pi-refresh" text @click="onPageChange(meta.current_page)" />
             </template>
             <template #paginatorend>
-                <Button type="button" icon="pi pi-download"  @click="() => {
-                    location.href = '/api/files/' + selectedCity.code + '.csv'
+                <Button type="button" icon="pi pi-download" @click="async () => {
+                    await downloadFile(selectedCity.code)
                 }" text />
             </template>
             <Column field="id" header="ID" style="width: 25%"></Column>
@@ -23,7 +24,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { useUserState } from '~/state/useUserState';
+const userState = useUserState()
 
 const products = ref([]);
 const meta = ref({});
@@ -39,13 +41,18 @@ const cities = ref([
 const currentType = ref('wells');
 
 const fetchProducts = async (type, page = 1) => {
-    const response = await fetch(`/api/objects/list?order_direction=asc&obj_type=${selectedCity.value.code}&page=${page}&per_page=1000`);
+    console.log(userState.token.value)
+    const response = await fetch(`/api/objects/list?order_direction=asc&obj_type=${selectedCity.value.code}&page=${page}&per_page=1000`, {
+        headers: {
+            "Authorization": 'Bearer ' + localStorage.getItem('token')
+        }
+    });
     const data = await response.json();
     products.value = data.data;
     meta.value = data.meta;
 };
 
-const onPageChange = (page=1) => {
+const onPageChange = (page = 1) => {
     fetchProducts(currentType.value, page);
 };
 
